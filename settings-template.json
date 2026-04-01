@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/project-context-loader.sh",
+            "statusMessage": "Carregando contexto do projeto..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/tdd-regression-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/prompt-submit-docs-guard.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/architecture-guard.sh",
+            "statusMessage": "Verificando arquitetura..."
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__plugin_playwright_playwright__browser_take_screenshot|mcp__plugin_playwright_playwright__browser_snapshot|mcp__computer-use__screenshot|mcp__computer-use__zoom",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/screenshot-analyzer.sh",
+            "statusMessage": "Analisando evidencia capturada..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/screenshot-analyzer.sh",
+            "if": "Bash(*adb*)",
+            "statusMessage": "Analisando evidencia capturada..."
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/agent-progress-tracker.sh",
+            "statusMessage": "Rastreando agente..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/commit-docs-check.sh",
+            "if": "Bash(git commit*)",
+            "statusMessage": "Verificando documentacao..."
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/issue-evidence-guard.sh",
+            "if": "Bash(*gh *)",
+            "statusMessage": "Verificando evidencias na issue..."
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "atlassian@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true
+  },
+  "language": "Portugues Brasil",
+  "effortLevel": "max"
+}
